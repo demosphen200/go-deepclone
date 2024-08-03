@@ -5,9 +5,9 @@ import (
 	"reflect"
 )
 
-type CloneFn func(src reflect.Value, ptrToDst reflect.Value) error
+type cloneFn func(src reflect.Value, ptrToDst reflect.Value) error
 
-var knownStructCloners map[reflect.Type]CloneFn
+var knownStructCloners map[reflect.Type]cloneFn
 
 func RegisterStructCloner[T any](
 	cloner func(src *T) (*T, error),

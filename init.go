@@ -6,7 +6,7 @@ import (
 )
 
 func init() {
-	knownStructCloners = make(map[reflect.Type]CloneFn)
+	knownStructCloners = make(map[reflect.Type]cloneFn)
 	RegisterStructCloner(
 		func(src *time.Time) (*time.Time, error) {
 			var tm = *src
