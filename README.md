@@ -11,7 +11,6 @@ DeepClone supports all types of go language. When cloning, new instances of all 
 ## Usage
 
 
-
 ```go
 type SomeStruct struct {
 	A string
