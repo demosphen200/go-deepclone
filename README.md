@@ -12,6 +12,10 @@ DeepClone supports all types of go language. When cloning, new instances of all 
 
 
 ```go
+import (
+	"github.com/demosphen200/go-deepclone"
+)
+
 type SomeStruct struct {
 	A string
 	B []int
@@ -22,7 +26,7 @@ src := SomeStruct{
     B: []int{1, 2, 3},
 }
 dst := SomeStruct{}
-err := DeepClone(&src, &dst)
+err := deepclone.DeepClone(&src, &dst)
 if err != nil {
     panic("cannot clone")
 }
@@ -31,7 +35,7 @@ if err != nil {
 
 srcSlice := []SomeStruct{src}
 var dstSlice []SomeStruct
-err = DeepClone(&srcSlice, &dstSlice)
+err = deepclone.DeepClone(&srcSlice, &dstSlice)
 if err != nil {
     panic("cannot clone")
 }
