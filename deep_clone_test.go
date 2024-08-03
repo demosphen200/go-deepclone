@@ -14,7 +14,7 @@ func commonTest[
 	var src = initSrc
 	var dst = initDst
 
-	err := DeepCloneAny(&src, &dst)
+	err := DeepClone(&src, &dst)
 	if assert.NoError(t, err) {
 		assert.Equal(t, src, dst)
 	} else {
@@ -22,7 +22,7 @@ func commonTest[
 	}
 }
 
-func TestDeepCloneAny_int(t *testing.T) {
+func TestDeepClone_int(t *testing.T) {
 	commonTest[int](t, 123, 0)
 	commonTest[int8](t, 123, 0)
 	commonTest[int16](t, 123, 0)
@@ -36,11 +36,11 @@ func TestDeepCloneAny_int(t *testing.T) {
 	commonTest[uintptr](t, 123, 0)
 }
 
-func TestDeepCloneAny_string(t *testing.T) {
+func TestDeepClone_string(t *testing.T) {
 	commonTest(t, "123", "")
 }
 
-func TestDeepCloneAny_slice(t *testing.T) {
+func TestDeepClone_slice(t *testing.T) {
 	commonTest(t, []int{1, 2, 3}, nil)
 	commonTest(t, nil, []int{1, 2, 3})
 
@@ -48,7 +48,7 @@ func TestDeepCloneAny_slice(t *testing.T) {
 	expected := []int{1, 2, 3}
 	var dst []int
 
-	err := DeepCloneAny(&src, &dst)
+	err := DeepClone(&src, &dst)
 	src[1] = 222
 
 	if assert.NoError(t, err) {
@@ -58,7 +58,24 @@ func TestDeepCloneAny_slice(t *testing.T) {
 	}
 }
 
-func TestDeepCloneAny_map(t *testing.T) {
+func TestDeepClone_array(t *testing.T) {
+	commonTest(t, [3]int{1, 2, 3}, [3]int{})
+
+	src := [3]int{1, 2, 3}
+	expected := [3]int{1, 2, 3}
+	var dst [3]int
+
+	err := DeepClone(&src, &dst)
+	src[1] = 222
+
+	if assert.NoError(t, err) {
+		assert.Equal(t, expected, dst)
+	} else {
+		assert.Fail(t, fmt.Sprintf("DeepCloneAny failed on %s", reflect.TypeOf(src).String()))
+	}
+}
+
+func TestDeepClone_map(t *testing.T) {
 	commonTest(t, map[string]string{
 		"a": "aaa",
 		"b": "bbb",
@@ -79,11 +96,25 @@ func TestDeepCloneAny_map(t *testing.T) {
 	}
 	var dst map[string]string
 
-	err := DeepCloneAny(&src, &dst)
+	err := DeepClone(&src, &dst)
 	clear(src)
 
 	if assert.NoError(t, err) {
 		assert.Equal(t, expected, dst)
+	} else {
+		assert.Fail(t, fmt.Sprintf("DeepCloneAny failed on %s", reflect.TypeOf(src).String()))
+	}
+}
+
+func TestDeepClone_chan(t *testing.T) {
+	src := make(chan int, 123)
+	var dst chan int
+
+	err := DeepClone(&src, &dst)
+
+	if assert.NoError(t, err) {
+		assert.NotNil(t, dst)
+		assert.Equal(t, 123, cap(dst))
 	} else {
 		assert.Fail(t, fmt.Sprintf("DeepCloneAny failed on %s", reflect.TypeOf(src).String()))
 	}
@@ -100,7 +131,7 @@ type testStruct2 struct {
 	c int
 }
 
-func TestDeepCloneAny_struct(t *testing.T) {
+func TestDeepClone_struct(t *testing.T) {
 
 	commonTest(t, testStruct{
 		A: 1,
@@ -118,26 +149,26 @@ func TestDeepCloneAny_struct(t *testing.T) {
 	})
 }
 
-func TestDeepCloneAny_any_int(t *testing.T) {
+func TestDeepClone_any_int(t *testing.T) {
 	var initSrc any = 123
 	var initDst any = ""
 	commonTest(t, initSrc, initDst)
 }
 
-func TestDeepCloneAny_any_untyped_nil(t *testing.T) {
+func TestDeepClone_any_untyped_nil(t *testing.T) {
 	var initSrc any = nil
 	var initDst any = ""
 	commonTest(t, initSrc, initDst)
 }
 
-func TestDeepCloneAny_any_typed_nil(t *testing.T) {
+func TestDeepClone_any_typed_nil(t *testing.T) {
 	var ptr *int
 	var initSrc any = ptr
 	var initDst any = ""
 	commonTest(t, initSrc, initDst)
 }
 
-func TestDeepCloneAny_pointer(t *testing.T) {
+func TestDeepClone_pointer(t *testing.T) {
 	val1 := 123
 	var initSrc = &val1
 	var initDst *int
@@ -146,7 +177,7 @@ func TestDeepCloneAny_pointer(t *testing.T) {
 	commonTest(t, nil, initSrc)
 }
 
-func TestDeepCloneAny_pointer_shouldCreateNewInstance(t *testing.T) {
+func TestDeepClone_pointer_shouldCreateNewInstance(t *testing.T) {
 	val1 := 123
 	val2 := 123
 
@@ -154,7 +185,7 @@ func TestDeepCloneAny_pointer_shouldCreateNewInstance(t *testing.T) {
 	expected := &val2
 	dst := &val1
 
-	err := DeepCloneAny(&src, &dst)
+	err := DeepClone(&src, &dst)
 
 	*src = 11111
 
@@ -165,11 +196,11 @@ func TestDeepCloneAny_pointer_shouldCreateNewInstance(t *testing.T) {
 	}
 }
 
-func TestDeepClone_int(t *testing.T) {
+func TestDeepCloneAny(t *testing.T) {
 	var src = 123
 	var dst = 0
 
-	err := DeepClone(&src, &dst)
+	err := DeepCloneAny(&src, &dst)
 	if assert.NoError(t, err) {
 		assert.Equal(t, src, dst)
 	} else {

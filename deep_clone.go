@@ -58,9 +58,17 @@ func DeepCloneReflect(src reflect.Value, ptrToDst reflect.Value) error {
 		dstElem.Set(srcElem)
 		return nil
 	case reflect.Array:
-		return errors.New("channels are not supported yet")
+		dstArray := reflect.New(srcElem.Type()).Elem()
+		for index := 0; index < srcElem.Len(); index++ {
+			err := DeepCloneReflect(srcElem.Index(index), dstArray.Index(index).Addr())
+			if err != nil {
+				return err
+			}
+		}
+		dstElem.Set(dstArray)
 	case reflect.Chan:
-		return errors.New("channels are not supported yet")
+		dstChan := reflect.MakeChan(srcElem.Type(), srcElem.Cap())
+		dstElem.Set(dstChan)
 	case reflect.Func:
 		if srcElem.Elem().Type() != dstElem.Elem().Type() {
 			return errors.New("src and dst functions have different types")
