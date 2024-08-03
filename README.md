@@ -1,6 +1,6 @@
 
 # DeepClone library for go
-[![Go Reference](https://pkg.go.dev/badge/golang.org/x/example.svg)](https://pkg.go.dev/golang.org/x/example)
+[![Go Reference](https://pkg.go.dev/badge/golang.org/x/example.svg)](https://pkg.go.dev/github.com/demosphen200/go-deepclone)
 
 
 This repository contains a set of functions to deep clone values of any type.
