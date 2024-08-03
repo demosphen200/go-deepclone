@@ -3,7 +3,6 @@ package deepclone
 import (
 	"errors"
 	"reflect"
-	"time"
 )
 
 type CloneFn func(src reflect.Value, ptrToDst reflect.Value) error
@@ -27,16 +26,6 @@ func RegisterStructCloner[T any](
 		ptrToDst.Elem().Set(rfCloned.Elem())
 		return nil
 	}
-}
-
-func init() {
-	knownStructCloners = make(map[reflect.Type]CloneFn)
-	RegisterStructCloner(
-		func(src *time.Time) (*time.Time, error) {
-			var tm = *src
-			return &tm, nil
-		},
-	)
 }
 
 func DeepCloneReflect(src reflect.Value, ptrToDst reflect.Value) error {
